@@ -80,11 +80,8 @@
             android:label="@string/security_preview_settings_title"
             android:excludeFromRecents="true"
             android:permission="app.seamlessupdate.client.OPEN_SECURITY_PREVIEW_SETTINGS"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="app.seamlessupdate.client.SECURITY_PREVIEW_SETTINGS" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+            android:exported="false">
+            <!-- no SECURITY_PREVIEW_SETTINGS filter: setup skips its security preview step -->
         </activity>
     </application>
 </manifest>

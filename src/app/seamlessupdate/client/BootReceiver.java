@@ -15,9 +15,6 @@ public class BootReceiver extends BroadcastReceiver {
             preferences.edit().putBoolean(Settings.KEY_WAITING_FOR_REBOOT, false).apply();
             PeriodicJob.schedule(context);
 
-            if (!preferences.contains(Settings.KEY_USE_SECURITY_PREVIEW_CHANNEL)) {
-                NotificationHandler.showSetSecurityPreviewNotification(context);
-            }
         } else {
             context.getPackageManager().setApplicationEnabledSetting(context.getPackageName(),
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED, 0);

@@ -51,15 +51,9 @@ public class Settings extends CollapsingToolbarBaseActivity {
     }
 
     static boolean shouldUseSecurityPreviewChannel(final Context context) {
-        int val = getPreferences(context).getInt(KEY_USE_SECURITY_PREVIEW_CHANNEL, -1);
-        switch (val) {
-            case 0:
-                return false;
-            case 1:
-                return true;
-            default:
-                return false;
-        }
+        // os.ivan.gg publishes no security preview releases, so the opt-in is ignored and hidden:
+        // a phone that opted in would ask for a channel file that never exists
+        return false;
     }
 
     static int getNetworkType(final Context context) {
@@ -187,6 +181,7 @@ public class Settings extends CollapsingToolbarBaseActivity {
                     requirePreference(KEY_USE_SECURITY_PREVIEW_CHANNEL);
             final boolean newChecked = shouldUseSecurityPreviewChannel(requireContext());
             useSecurityPreviewChannel.setChecked(newChecked);
+            useSecurityPreviewChannel.setVisible(false);
             return useSecurityPreviewChannel;
         }
 

@@ -8,6 +8,8 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Network;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.RecoverySystem;
@@ -19,6 +21,7 @@ import android.os.UpdateEngine.UpdateStatusConstants;
 import android.os.UpdateEngineCallback;
 import android.os.storage.StorageManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
@@ -258,6 +261,11 @@ public class Service extends IntentService {
         notificationHandler.showRebootNotification();
     }
 
+    private void showToast(final String text) {
+        new Handler(Looper.getMainLooper()).post(() ->
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show());
+    }
+
     @Override
     protected void onHandleIntent(final Intent intent) {
         Log.d(TAG, "onHandleIntent");
@@ -303,6 +311,9 @@ public class Service extends IntentService {
             final long sourceBuildDate = SystemProperties.getLong("ro.build.date.utc", 0);
             if (targetBuildDate <= sourceBuildDate) {
                 notificationHandler.showUpdatedNotification(channel);
+                if (serviceIsUserInitiated) {
+                    showToast(getString(R.string.notification_updated_title));
+                }
                 Log.d(TAG, "targetBuildDate: " + targetBuildDate + " not higher than sourceBuildDate: " + sourceBuildDate);
                 mUpdating = false;
                 return;
@@ -424,6 +435,8 @@ public class Service extends IntentService {
             notificationHandler.showFailureNotification(e.getMessage());
             mUpdating = false;
             if (serviceIsUserInitiated) {
+                // the notifications are silent; someone who tapped "Check for updates" should see why
+                showToast(getString(R.string.check_failed_toast, e.getMessage()));
                 // Either the user will try again immediately or the already scheduled periodic
                 // job will pick it up under constraints (which will retry on failure)
                 Log.w(TAG, "onHandleIntent() – service failed but failure is ignored because it was user-initiated");
